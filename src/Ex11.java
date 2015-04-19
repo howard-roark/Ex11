@@ -3,29 +3,40 @@
  */
 public class Ex11 {
 
-  private static int[][] buildInitialTable(String[] fromCommandLine) {
-    int[][] table = new int[fromCommandLine.length][fromCommandLine.length];
-    for (int j = 0; j < fromCommandLine.length; j++) {
-      for (int i = 0; i < fromCommandLine.length; i++) {
-        if (j == 0 && i != 0) {
-          table[i][j] = Integer.parseInt(fromCommandLine[i - 1]);
-        } else if (i == 0 && j != 0) {
-          table[i][j] = Integer.parseInt(fromCommandLine[j]);
-        } else if (i == j) {
-          table[i][j] = 0;
-        }
+  private static Cell[][] buildInitialTable(String[] fromCommandLine) {
+    Cell[][] table = new Cell[fromCommandLine.length][fromCommandLine.length];
+    for (int i = 0; i < fromCommandLine.length; i++) {
+      for (int j = 0; j < fromCommandLine.length; j++) {
+        table[i][j] =
+            new Cell(Integer.parseInt(fromCommandLine[i]), Integer.parseInt(fromCommandLine[j]),
+                     0);
       }
     }
     return table;
   }
 
+  private static void processGame(Cell[][] table, int row, int col) {
+    if (table.length != 1) {
+      if (row == 0 && col == 0) {
+        displayGameState(table);
+        //TODO decide which move to make at Cell [0][row.length]
+      } else {
+        //TODO recursively process table
+      }
+    }
+  }
+
+  private static void displayGameState(Cell[][] table) {
+
+  }
+
   public static void main(String[] args) {
-    int[][] initialTable = buildInitialTable(args);
-    System.out.println("HERE:)");
+    processGame(buildInitialTable(args), args.length, args.length);
   }
 }
 
 class Cell {
+
   private int rowChoice = -1;
   private int colChoice = -1;
   private int totalScorePossible = -1;
