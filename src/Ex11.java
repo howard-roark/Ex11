@@ -22,23 +22,34 @@ public class Ex11 {
         row < table.length - 1 ? table[row + 1][col].getTotalScorePossible() : 0;
     int colChoiceCompareTo =
         col > 0 ? table[row][col - 1].getTotalScorePossible() : 0;
+
+    table[row][col].setBestChoice(
+        (rowChoice + rowChoiceCompareTo) > (colChoice + colChoiceCompareTo) ? rowChoice
+                                                                            : colChoice);
+    table[row][col].setTotalScorePossible(
+        Math.max((rowChoice + rowChoiceCompareTo), (colChoice + colChoiceCompareTo)));
+
     if (row == 0 && col == table.length - 1) {
-      table[row][col].setTotalScorePossible(
-          Math.max((rowChoice + rowChoiceCompareTo), (colChoice + colChoiceCompareTo)));
       displayGameState(table);
     } else if (row == 0 && col != table.length - 1) {
-      table[row][col].setTotalScorePossible(
-          Math.max((rowChoice + rowChoiceCompareTo), (colChoice + colChoiceCompareTo)));
       processGame(table, nextStartingRow, --nextStartingRow, table.length - 1);
     } else {
-      table[row][col].setTotalScorePossible(
-          Math.max((rowChoice + rowChoiceCompareTo), (colChoice + colChoiceCompareTo)));
       processGame(table, --row, nextStartingRow, --col);
     }
   }
 
   private static void displayGameState(Cell[][] table) {
-
+    System.out.println("\n\n\t\t\u001B[34mBEST SCORE : CHOICE FOR BEST SCORE\u001B[0m");
+    for (int row = 0; row < table.length; row++) {
+      for (int col = 0; col < table[row].length; col++) {
+        int score = table[row][col].getTotalScorePossible();
+        int choice = table[row][col].getBestChoice();
+        System.out.print("\t\t");
+        System.out.printf("%-12s",
+                          ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
+      }
+      System.out.println();
+    }
   }
 
   public static void main(String[] args) {
@@ -52,11 +63,16 @@ class Cell {
   private int rowChoice = -1;
   private int colChoice = -1;
   private int totalScorePossible = -1;
+  private int bestChoice = -1;
 
   public Cell(int rowChoice, int colChoice, int totalScorePossible) {
     this.rowChoice = rowChoice;
     this.colChoice = colChoice;
     this.totalScorePossible = totalScorePossible;
+  }
+
+  protected void setBestChoice(int bestChoice) {
+    this.bestChoice = bestChoice;
   }
 
   protected void setTotalScorePossible(int totalScorePossible) {
@@ -73,5 +89,9 @@ class Cell {
 
   protected int getTotalScorePossible() {
     return this.totalScorePossible;
+  }
+
+  protected int getBestChoice() {
+    return this.bestChoice;
   }
 }
