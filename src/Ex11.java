@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * Created by matthewmcguire on 4/19/15.
  */
@@ -39,12 +41,12 @@ public class Ex11 {
   }
 
   private static void displayGameState(Cell[][] table) {
-    System.out.println("\n\n\t\t\u001B[34mBEST SCORE : CHOICE FOR BEST SCORE\u001B[0m");
+    System.out.println("\n\n\t\u001B[34mBEST SCORE : CHOICE FOR BEST SCORE\u001B[0m");
     for (int row = 0; row < table.length; row++) {
       for (int col = 0; col < table[row].length; col++) {
         int score = table[row][col].getTotalScorePossible();
         int choice = table[row][col].getBestChoice();
-        System.out.print("\t\t");
+        System.out.print("\t");
         System.out.printf("%-12s",
                           ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
       }
@@ -54,44 +56,86 @@ public class Ex11 {
 
   public static void main(String[] args) {
     int row = args.length - 2, nextStartingRow = args.length - 3, col = args.length - 1;
-    processGame(buildInitialTable(args), row, nextStartingRow, col);
+    processGame(buildInitialTable(UserData.getUserInput()), row, nextStartingRow, col);
+  }
+
+}
+
+class UserData {
+
+  static String[] getUserInput() {
+    Scanner in = new Scanner(System.in);
+    System.out.println("");
+
+    System.out.println("\tPlease enter the how many numbers you would like to play with:");
+    int amountOfNumbers = -9;
+    while (!in.hasNextInt()) {
+      System.err.println("Please enter a valid integer for the amount " +
+                         "of numbers to play with.");
+      try {
+        amountOfNumbers = Integer.getInteger(in.next());
+      } catch (Exception e) {
+      }
+    }
+    if (amountOfNumbers == -9) {
+      amountOfNumbers = in.nextInt();
+    }
+
+    String[] initialValues = new String[amountOfNumbers];
+
+    for (int i = 0; i < amountOfNumbers; i++) {
+      int value = -9;
+      System.out.println("\tPlease enter a value to play with.");
+      while (!in.hasNextInt()) {
+        System.err.println("Please enter a valid integer to play with.");
+        try {
+          value = Integer.getInteger(in.next());
+        } catch (Exception e) {
+        }
+      }
+      if (value == -9) {
+        value = in.nextInt();
+      }
+      initialValues[i] = String.valueOf(value);
+    }
+    return initialValues;
   }
 }
 
-class Cell {
+  class Cell {
 
-  private int rowChoice = -1;
-  private int colChoice = -1;
-  private int totalScorePossible = -1;
-  private int bestChoice = -1;
+    private int rowChoice = -1;
+    private int colChoice = -1;
+    private int totalScorePossible = -1;
+    private int bestChoice = -1;
 
-  public Cell(int rowChoice, int colChoice, int totalScorePossible) {
-    this.rowChoice = rowChoice;
-    this.colChoice = colChoice;
-    this.totalScorePossible = totalScorePossible;
+    public Cell(int rowChoice, int colChoice, int totalScorePossible) {
+      this.rowChoice = rowChoice;
+      this.colChoice = colChoice;
+      this.totalScorePossible = totalScorePossible;
+    }
+
+    protected void setBestChoice(int bestChoice) {
+      this.bestChoice = bestChoice;
+    }
+
+    protected void setTotalScorePossible(int totalScorePossible) {
+      this.totalScorePossible = totalScorePossible;
+    }
+
+    protected int getRowChoice() {
+      return this.rowChoice;
+    }
+
+    protected int getColChoice() {
+      return this.colChoice;
+    }
+
+    protected int getTotalScorePossible() {
+      return this.totalScorePossible;
+    }
+
+    protected int getBestChoice() {
+      return this.bestChoice;
+    }
   }
-
-  protected void setBestChoice(int bestChoice) {
-    this.bestChoice = bestChoice;
-  }
-
-  protected void setTotalScorePossible(int totalScorePossible) {
-    this.totalScorePossible = totalScorePossible;
-  }
-
-  protected int getRowChoice() {
-    return this.rowChoice;
-  }
-
-  protected int getColChoice() {
-    return this.colChoice;
-  }
-
-  protected int getTotalScorePossible() {
-    return this.totalScorePossible;
-  }
-
-  protected int getBestChoice() {
-    return this.bestChoice;
-  }
-}
