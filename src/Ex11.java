@@ -46,17 +46,26 @@ public class Ex11 {
       for (int col = 0; col < table[row].length; col++) {
         int score = table[row][col].getTotalScorePossible();
         int choice = table[row][col].getBestChoice();
-        System.out.print("\t");
-        System.out.printf("%-12s",
-                          ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
+        if ((row == 0) && (col == table.length - 1)) {
+          System.out.print("\t");
+          System.out.printf("%-12s",
+                            ((score == 0) ? "-" : "\u001B[34m" + score + "\u001B[0m") + " : " + (
+                                (choice == -1) ? "-" : "\u001B[34m" + choice + "\u001B[0m"));
+        } else {
+          System.out.print("\t");
+          System.out.printf("%-12s",
+                            ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
+        }
       }
       System.out.println();
     }
   }
 
   public static void main(String[] args) {
-    int row = args.length - 2, nextStartingRow = args.length - 3, col = args.length - 1;
-    processGame(buildInitialTable(UserData.getUserInput()), row, nextStartingRow, col);
+    Cell[][] initialTable = buildInitialTable(UserData.getUserInput());
+    int row = initialTable.length - 1, nextStartingRow = initialTable.length - 2,
+        col = initialTable.length - 1;
+    processGame(initialTable, row, nextStartingRow, col);
   }
 
 }
@@ -90,7 +99,7 @@ class UserData {
         System.err.println("Please enter a valid integer to play with.");
         try {
           value = Integer.getInteger(in.next());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
       }
       if (value == -9) {
@@ -102,40 +111,40 @@ class UserData {
   }
 }
 
-  class Cell {
+class Cell {
 
-    private int rowChoice = -1;
-    private int colChoice = -1;
-    private int totalScorePossible = -1;
-    private int bestChoice = -1;
+  private int rowChoice = -1;
+  private int colChoice = -1;
+  private int totalScorePossible = -1;
+  private int bestChoice = -1;
 
-    public Cell(int rowChoice, int colChoice, int totalScorePossible) {
-      this.rowChoice = rowChoice;
-      this.colChoice = colChoice;
-      this.totalScorePossible = totalScorePossible;
-    }
-
-    protected void setBestChoice(int bestChoice) {
-      this.bestChoice = bestChoice;
-    }
-
-    protected void setTotalScorePossible(int totalScorePossible) {
-      this.totalScorePossible = totalScorePossible;
-    }
-
-    protected int getRowChoice() {
-      return this.rowChoice;
-    }
-
-    protected int getColChoice() {
-      return this.colChoice;
-    }
-
-    protected int getTotalScorePossible() {
-      return this.totalScorePossible;
-    }
-
-    protected int getBestChoice() {
-      return this.bestChoice;
-    }
+  public Cell(int rowChoice, int colChoice, int totalScorePossible) {
+    this.rowChoice = rowChoice;
+    this.colChoice = colChoice;
+    this.totalScorePossible = totalScorePossible;
   }
+
+  protected void setBestChoice(int bestChoice) {
+    this.bestChoice = bestChoice;
+  }
+
+  protected void setTotalScorePossible(int totalScorePossible) {
+    this.totalScorePossible = totalScorePossible;
+  }
+
+  protected int getRowChoice() {
+    return this.rowChoice;
+  }
+
+  protected int getColChoice() {
+    return this.colChoice;
+  }
+
+  protected int getTotalScorePossible() {
+    return this.totalScorePossible;
+  }
+
+  protected int getBestChoice() {
+    return this.bestChoice;
+  }
+}
