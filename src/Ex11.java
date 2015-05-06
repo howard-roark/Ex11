@@ -9,9 +9,14 @@ public class Ex11 {
     Cell[][] table = new Cell[fromCommandLine.length][fromCommandLine.length];
     for (int i = 0; i < fromCommandLine.length; i++) {
       for (int j = 0; j < fromCommandLine.length; j++) {
-        table[i][j] =
-            new Cell(Integer.parseInt(fromCommandLine[i]), Integer.parseInt(fromCommandLine[j]),
-                     0);
+        if (i == j) {
+          Cell c = new Cell(Integer.parseInt(fromCommandLine[i]), Integer.parseInt(fromCommandLine[j]),
+                            Integer.parseInt(fromCommandLine[i]));
+          c.setBestChoice(Integer.parseInt(fromCommandLine[i]));
+          table[i][j] = c;
+        } else {
+          table[i][j] = new Cell(Integer.parseInt(fromCommandLine[i]), Integer.parseInt(fromCommandLine[j]), 0);
+        }
       }
     }
     return table;
@@ -20,16 +25,21 @@ public class Ex11 {
   private static void processGame(Cell[][] table, int row, int nextStartingRow, int col) {
     int rowChoice = table[row][col].getRowChoice();
     int colChoice = table[row][col].getColChoice();
-    int rowChoiceCompareTo =
-        row < table.length - 1 ? table[row + 1][col].getTotalScorePossible() : 0;
-    int colChoiceCompareTo =
-        col > 0 ? table[row][col - 1].getTotalScorePossible() : 0;
 
-    table[row][col].setBestChoice(
-        (rowChoice + rowChoiceCompareTo) > (colChoice + colChoiceCompareTo) ? rowChoice
-                                                                            : colChoice);
-    table[row][col].setTotalScorePossible(
-        Math.max((rowChoice + rowChoiceCompareTo), (colChoice + colChoiceCompareTo)));
+    int opponentsNextChoiceA = ((col - 2) >= 0) ? table[row][col - 2].getTotalScorePossible() : 0;
+    int
+        opponentNextChoiceB =
+        ((row + 1) < table.length && (col - 1) >= 0) ? table[row + 1][col - 1].getTotalScorePossible() : 0;
+    int opponentNextChoiceC = ((row + 2) < table.length) ? table[row + 2][col].getTotalScorePossible() : 0;
+
+    int colChoiceMin = Math.min(opponentsNextChoiceA, opponentNextChoiceB);
+    int rowChoiceMin = Math.min(opponentNextChoiceB, opponentNextChoiceC);
+
+    int colChoiceScore = colChoice + colChoiceMin;
+    int rowChoiceScore = rowChoice + rowChoiceMin;
+
+    table[row][col].setTotalScorePossible(Math.max(colChoiceScore, rowChoiceScore));
+    table[row][col].setBestChoice((colChoiceScore > rowChoiceScore) ? colChoice : rowChoice);
 
     if (row == 0 && col == table.length - 1) {
       displayGameState(table);
@@ -48,13 +58,11 @@ public class Ex11 {
         int choice = table[row][col].getBestChoice();
         if ((row == 0) && (col == table.length - 1)) {
           System.out.print("\t");
-          System.out.printf("%-12s",
-                            ((score == 0) ? "-" : "\u001B[34m" + score + "\u001B[0m") + " : " + (
-                                (choice == -1) ? "-" : "\u001B[34m" + choice + "\u001B[0m"));
+          System.out.printf("%-12s", ((score == 0) ? "-" : "\u001B[34m" + score + "\u001B[0m") + " : " +
+                                     ((choice == -1) ? "-" : "\u001B[34m" + choice + "\u001B[0m"));
         } else {
           System.out.print("\t");
-          System.out.printf("%-12s",
-                            ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
+          System.out.printf("%-12s", ((score == 0) ? "-" : score) + " : " + ((choice == -1) ? "-" : choice));
         }
       }
       System.out.println();
@@ -63,8 +71,7 @@ public class Ex11 {
 
   public static void main(String[] args) {
     Cell[][] initialTable = buildInitialTable(UserData.getUserInput());
-    int row = initialTable.length - 1, nextStartingRow = initialTable.length - 2,
-        col = initialTable.length - 1;
+    int row = initialTable.length - 2, nextStartingRow = initialTable.length - 3, col = initialTable.length - 1;
     processGame(initialTable, row, nextStartingRow, col);
   }
 
@@ -79,8 +86,7 @@ class UserData {
     System.out.println("\tPlease enter the how many numbers you would like to play with:");
     int amountOfNumbers = -9;
     while (!in.hasNextInt()) {
-      System.err.println("Please enter a valid integer for the amount " +
-                         "of numbers to play with.");
+      System.err.println("Please enter a valid integer for the amount of numbers to play with.");
       try {
         amountOfNumbers = Integer.getInteger(in.next());
       } catch (Exception e) {
